@@ -108,12 +108,29 @@ contract("ReviewPlatform", accounts => {
             });
 
             const initialBalance = new web3.utils.BN(await web3.eth.getBalance(owner));
+            const contractBalance = new web3.utils.BN(await web3.eth.getBalance(reviewPlatform.address));
             
             // Withdraw fees
-            await reviewPlatform.withdrawFees({ from: owner });
+            const receipt = await reviewPlatform.withdrawFees({ from: owner });
+            
+            // Calculate gas cost
+            const tx = await web3.eth.getTransaction(receipt.tx);
+            const gasUsed = new web3.utils.BN(receipt.receipt.gasUsed);
+            const gasPrice = new web3.utils.BN(tx.gasPrice);
+            const gasCost = gasPrice.mul(gasUsed);
             
             const finalBalance = new web3.utils.BN(await web3.eth.getBalance(owner));
-            assert.ok(finalBalance.gt(initialBalance), "Owner balance should have increased");
+            const expectedBalance = initialBalance.add(contractBalance).sub(gasCost);
+            
+            assert.equal(
+                finalBalance.toString(),
+                expectedBalance.toString(),
+                "Owner didn't receive the correct amount of fees"
+            );
+            
+            // Verify contract balance is now 0
+            const newContractBalance = await web3.eth.getBalance(reviewPlatform.address);
+            assert.equal(newContractBalance, '0', "Contract should have 0 balance after withdrawal");
         });
 
         it("should not allow non-owner to withdraw fees", async () => {
