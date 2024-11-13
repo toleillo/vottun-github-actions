@@ -41,13 +41,8 @@ jobs:
       run: |
         truffle test
 
-    - name: Run Coverage
-      run: |
-        npm install -g solidity-coverage
-        truffle run coverage
-
-    - name: Upload Coverage Report
-      uses: actions/upload-artifact@v3
-      with:
-        name: coverage-report
-        path: coverage/ 
+    - name: Deploy Contract
+      env:
+        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+        INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
+      run: truffle migrate --network mainnet
