@@ -1,0 +1,58 @@
+name: Solidity Testing Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run Solidity Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16.x'
+
+    - name: Cache Node.js modules
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-node-
+
+    - name: Install Dependencies
+      run: |
+        npm ci
+        npm install -g truffle
+        npm install -g ganache-cli
+        npm install @openzeppelin/test-helpers
+
+    - name: Run Linter
+      run: |
+        npm install -g solhint
+        solhint 'contracts/**/*.sol'
+
+    - name: Start Ganache
+      run: ganache-cli &
+      
+    - name: Run Tests
+      run: |
+        truffle test
+
+    - name: Run Coverage
+      run: |
+        npm install -g solidity-coverage
+        truffle run coverage
+
+    - name: Upload Coverage Report
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage-report
+        path: coverage/ 
