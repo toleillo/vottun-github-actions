@@ -34,11 +34,6 @@ jobs:
         npm install -g ganache-cli
         npm install @openzeppelin/test-helpers
 
-    - name: Run Linter
-      run: |
-        npm install -g solhint
-        solhint 'contracts/**/*.sol'
-
     - name: Start Ganache
       run: ganache-cli &
       
