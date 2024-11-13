@@ -1,0 +1,17 @@
+{
+  "name": "review-platform",
+  "version": "1.0.0",
+  "description": "Blockchain-based review platform",
+  "scripts": {
+    "test": "truffle test",
+    "lint": "solhint 'contracts/**/*.sol'",
+    "coverage": "truffle run coverage"
+  },
+  "devDependencies": {
+    "@openzeppelin/test-helpers": "^0.5.16",
+    "ganache-cli": "^6.12.2",
+    "solhint": "^3.3.7",
+    "solidity-coverage": "^0.7.22",
+    "truffle": "^5.5.0"
+  }
+}

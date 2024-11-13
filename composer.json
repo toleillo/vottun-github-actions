@@ -1,0 +1,5 @@
+{
+    "require": {
+        "marcreichel/igdb-laravel": "^4.3"
+    }
+}
